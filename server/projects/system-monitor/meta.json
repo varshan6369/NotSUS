@@ -1,0 +1,33 @@
+{
+  "id": "tool-system-monitor",
+  "slug": "system-monitor",
+  "title": "System Hardware Monitor",
+  "description": "Terminal-based real-time CPU, memory, disk, and platform telemetry monitor rendered in retro ASCII gauges and bar meters.",
+  "category": "System",
+  "version": "1.1.0",
+  "asciiPreview": " +------------------------------------------------------+\n | [CPU CORE USAGE]   [||||||||||||||||||....]   82%    |\n | [RAM ALLOCATED]   [||||||||||............]   48%    |\n | [NVME STORAGE]    [||||||||||||||||||||..]   91%    |\n | [TERMINAL HOST]   LINUX / WIN32 CONSOLE              |\n | [STATUS METRIC]   ONLINE / OPERATIONAL               |\n +------------------------------------------------------+",
+  "tags": [
+    "System",
+    "Monitor",
+    "Telemetry",
+    "Hardware",
+    "Meters"
+  ],
+  "status": "active",
+  "author": "KernelCore",
+  "createdAt": "2026-03-04T12:00:00.000Z",
+  "updatedAt": "2026-03-08T08:00:00.000Z",
+  "downloadCount": 512,
+  "main": {
+    "batFilename": "run.bat",
+    "pyFilename": "code.py",
+    "available": true,
+    "broken": false
+  },
+  "backup": {
+    "enabled": false,
+    "batFilename": "run_backup.bat",
+    "pyFilename": "code_backup.py",
+    "available": false
+  }
+}

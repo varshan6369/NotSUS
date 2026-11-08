@@ -1,0 +1,33 @@
+{
+  "id": "tool-matrix-rain",
+  "slug": "matrix-rain",
+  "title": "Matrix Digital Rain Terminal",
+  "description": "Authentic falling green digital rain terminal simulator with customizable column density, glyph speeds, and phosphor glow.",
+  "category": "Animation",
+  "version": "1.2.0",
+  "asciiPreview": " 1 0 1 0 0 1 0 1 1 0 1 0 1 1 0 0 1 0 1 0 1\n 0   1   0   1   0   1   0   1   0   1   0\n 1 0   0 1 1   0 1 0   1 0 1   0 1   0 1 1\n   1 0   0   1   0   1   0   1   0 1   0  \n 0 1 1 0   1 0 1 0   1 0   1 0 1 0 1 0   1\n 1   0   1 0   1   0 1   0   1   0   1 0  \n   0 1 0 1   0 1 0 1   0 1 0   1 0 1   0 1\n 1 0   1   0   1   0 1   0   1 0   1 0   0\n 0   1 0 1 0 1   0 1   0 1 0 1   0   1 0 1\n 1 0   0   1   0 1   0   1   0 1 0 1   0  ",
+  "tags": [
+    "Matrix",
+    "Animation",
+    "Terminal",
+    "Sci-Fi",
+    "Green"
+  ],
+  "status": "active",
+  "author": "Cipher Systems",
+  "createdAt": "2026-03-02T14:30:00.000Z",
+  "updatedAt": "2026-03-06T09:15:00.000Z",
+  "downloadCount": 984,
+  "main": {
+    "batFilename": "run.bat",
+    "pyFilename": "code.py",
+    "available": true,
+    "broken": false
+  },
+  "backup": {
+    "enabled": true,
+    "batFilename": "run_backup.bat",
+    "pyFilename": "code_backup.py",
+    "available": true
+  }
+}

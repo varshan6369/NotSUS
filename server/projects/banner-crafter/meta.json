@@ -1,0 +1,33 @@
+{
+  "id": "tool-banner-crafter",
+  "slug": "banner-crafter",
+  "title": "Retro Figlet & Banner Crafter",
+  "description": "Design retro ANSI boxed frames, comment headers, and decorative terminal dividers for documentation, READMEs, and code.",
+  "category": "Creative",
+  "version": "2.0.1",
+  "asciiPreview": " +---------------------------------------------------------+\n |  ██████╗  ███████╗ ████████╗ ██████╗   ██████╗  ██╗    |\n |  ██╔══██╗ ██╔════╝ ╚══██╔══╝ ██╔══██╗ ██╔═══██╗ ██║    |\n |  ██████╔╝ █████╗      ██║    ██████╔╝ ██║   ██║ ██║    |\n |  ██╔══██╗ ██╔══╝      ██║    ██╔══██╗ ██║   ██║ ██║    |\n |  ██║  ██║ ███████╗    ██║    ██║  ██║ ╚██████╔╝ ███████╗|\n |  ╚═╝  ╚═╝ ╚══════╝    ╚═╝    ╚═╝  ╚═╝  ╚═════╝  ╚══════╝|\n +---------------------------------------------------------+",
+  "tags": [
+    "Banner",
+    "Boxes",
+    "Framing",
+    "Documentation",
+    "Retro"
+  ],
+  "status": "active",
+  "author": "PixelForge Labs",
+  "createdAt": "2026-03-03T16:00:00.000Z",
+  "updatedAt": "2026-03-07T11:20:00.000Z",
+  "downloadCount": 732,
+  "main": {
+    "batFilename": "run.bat",
+    "pyFilename": "code.py",
+    "available": true,
+    "broken": false
+  },
+  "backup": {
+    "enabled": true,
+    "batFilename": "run_backup.bat",
+    "pyFilename": "code_backup.py",
+    "available": true
+  }
+}

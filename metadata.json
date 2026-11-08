@@ -1,0 +1,6 @@
+{
+  "name": "ASCII Launcher",
+  "description": "A terminal-inspired ASCII utility portal for browsing, previewing, and downloading ready-to-run Python console tools.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,76 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --color-term-bg: #050505;
+  --color-term-card: #0A0A0A;
+  --color-term-card-hover: #121212;
+  --color-term-border: #242424;
+  --color-term-border-glow: #20D98944;
+  --color-term-green: #20D989;
+  --color-term-green-dark: #16A868;
+  --color-term-green-muted: #115738;
+  --color-term-text: #F2F2F2;
+  --color-term-muted: #999999;
+  --color-term-dim: #666666;
+  --color-term-error: #FF5555;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+/* Custom terminal scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #080808;
+}
+::-webkit-scrollbar-thumb {
+  background: #242424;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #20D989;
+}
+
+/* Subtle CRT Scanline Overlay */
+.crt-scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 4px, 6px 100%;
+}
+
+/* Terminal Cursor Blink */
+@keyframes term-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.term-cursor {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.15em;
+  background-color: #20D989;
+  vertical-align: -0.15em;
+  animation: term-blink 1s steps(1) infinite;
+}
+
+/* ASCII Art Canvas container to preserve exact spacing */
+pre.ascii-canvas {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+  line-height: 1.1;
+  letter-spacing: 0px;
+  white-space: pre;
+  tab-size: 4;
+}

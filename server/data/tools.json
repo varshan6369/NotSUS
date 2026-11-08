@@ -1,0 +1,150 @@
+[
+  {
+    "id": "tool-ascii-generator",
+    "slug": "ascii-generator",
+    "title": "ASCII Generator",
+    "description": "Generate stunning ASCII art from text input. Transform your words into beautiful console-style graphics with multiple fonts and styles.",
+    "category": "Utility",
+    "version": "1.0.0",
+    "asciiPreview": "                .860000069990008=..\n             :68000000066909900000=.\n           .800000000000009900000099:.\n         ;6000000999099000900099900998=\n        =00000600009909000999900090000996;..\n       =0000009009990009999990000000000000889988;\n      .009000000099600999000900000000000000000000\n     .099000000009996000090009000000000000000000000\n     80000\"        ~\"9900060909900000000000000000000\n    :3009\"              \"8000008000000000000000000000\n    \"00:                  \"90000900000000000000000000\n    \"30.                    '\"08900000000000000000000\n     00.                     .00000\"... 1900000000000\n    .00'   .800;;;000000600000099\"   \"9009990.. 0\n    \"05..  8; \"\"900090000\"              \"00309\"::\"\n    '966;  $$    \"009t                  \"099000:.\n    .000.  106.  8066..                '\"99000; 80.\n    :009'9; '800--01'00.               .0000\"  \"\"\n    .00000002   ::\" \"0990006.        ;800\n    000000669    80060et.;00008=\"    :9\"..\"00000\n   :900000.     00000899002\"        :0080;\"\"000\n   ;A000\"  .00000;  8;090t;0.9...  '09\"   ;00000\n  :00009:  000000000000;      00;\"000009\" :0000\n :000000   \"8099\" '0880\"-     ;0900000000; '0000\n =00090'          0000-        \"00\"     \"0000000\n :000;:           .000-        :00000.   .000000\n  99:             ;00\"         \"000\"       \"0000\n  89:             \"0;          '00\"          \"00\n  :;              \"\"           '0\"            \"\"",
+    "tags": [
+      "ASCII",
+      "Utility",
+      "Text-Art",
+      "Terminal",
+      "Fonts"
+    ],
+    "status": "active",
+    "author": "ASCII Launcher Team",
+    "createdAt": "2026-03-01T10:00:00.000Z",
+    "updatedAt": "2026-03-05T12:00:00.000Z",
+    "downloadCount": 1423,
+    "main": {
+      "batFilename": "run.bat",
+      "batContent": "@echo off\nchcp 65001 >nul\ntitle ASCII Generator v1.0.0 [Console Edition]\ncolor 0A\ncls\necho ========================================================\necho   ASCII GENERATOR v1.0.0 — LOCAL TERMINAL UTILITY\necho ========================================================\necho.\necho [INIT] Verifying Python runtime...\npython --version >nul 2>&1\nif errorlevel 1 (\n    echo [ERROR] Python was not found in your system PATH.\n    echo Please ensure Python 3.8 or newer is installed from python.org.\n    echo.\n    pause\n    exit /b 1\n)\necho [OK] Python runtime detected.\necho [RUN] Launching ASCII Generator script...\necho.\npython code.py\necho.\necho [EXIT] Process finished.\npause\n",
+      "pyFilename": "code.py",
+      "pyContent": "#!/usr/bin/env python3\n\"\"\"\nASCII Generator v1.0.0\nHigh-resolution terminal text-to-ASCII banner synthesizer.\nExecutes entirely locally on your terminal.\n\"\"\"\nimport os\nimport sys\nimport time\n\nBANNER = \"\"\"\n  ___   ___   ___  ___ ___    ___                          _             \n /   \\ / __| / __||_ _|_ _|  / __| ___  _ _   ___  _ _  __ _| |_  ___  _ _ \n| - | |\\__ \\| (__  | |  | |  | (_ |/ -_)| ' \\ / -_)| '_|/ _` |  _|/ _ \\| '_|\n|_|_|_||___/ \\___||___||___|  \\___|\\___||_||_|\\___||_|  \\__,_|\\__|\\___/|_|  \n\"\"\"\n\nFONT_BLOCK = {\n    'A': [\"  ███  \", \" ██ ██ \", \"██   ██\", \"███████\", \"██   ██\", \"██   ██\"],\n    'B': [\"██████ \", \"██   ██\", \"██████ \", \"██   ██\", \"██   ██\", \"██████ \"],\n    'C': [\" █████ \", \"██   ██\", \"██     \", \"██     \", \"██   ██\", \" █████ \"],\n    'D': [\"██████ \", \"██   ██\", \"██   ██\", \"██   ██\", \"██   ██\", \"██████ \"],\n    'E': [\"███████\", \"██     \", \"█████  \", \"██     \", \"██     \", \"███████\"],\n    'F': [\"███████\", \"██     \", \"█████  \", \"██     \", \"██     \", \"██     \"],\n    'G': [\" █████ \", \"██   ██\", \"██     \", \"██  ███\", \"██   ██\", \" █████ \"],\n    'H': [\"██   ██\", \"██   ██\", \"███████\", \"██   ██\", \"██   ██\", \"██   ██\"],\n    'I': [\"█████\", \"  ██ \", \"  ██ \", \"  ██ \", \"  ██ \", \"█████\"],\n    'L': [\"██     \", \"██     \", \"██     \", \"██     \", \"██     \", \"███████\"],\n    'O': [\" █████ \", \"██   ██\", \"██   ██\", \"██   ██\", \"██   ██\", \" █████ \"],\n    'R': [\"██████ \", \"██   ██\", \"██████ \", \"██   ██\", \"██   ██\", \"██   ██\"],\n    'S': [\" █████ \", \"██     \", \" █████ \", \"     ██\", \"██   ██\", \" █████ \"],\n    'T': [\"███████\", \"  ███  \", \"  ███  \", \"  ███  \", \"  ███  \", \"  ███  \"],\n    ' ': [\"     \", \"     \", \"     \", \"     \", \"     \", \"     \"]\n}\n\ndef render_text(text):\n    text = text.upper()\n    lines = [\"\" for _ in range(6)]\n    for char in text:\n        glyph = FONT_BLOCK.get(char, [\" ??? \"] * 6)\n        for i in range(6):\n            lines[i] += glyph[i] + \"  \"\n    return \"\\n\".join(lines)\n\ndef main():\n    print(\"\\033[92m\" + BANNER + \"\\033[0m\")\n    print(\"=\" * 64)\n    print(\" Welcome to ASCII Generator (Offline Terminal Edition)\")\n    print(\"=\" * 64)\n    \n    while True:\n        print(\"\\nSelect option:\")\n        print(\" [1] Render Custom Word in ASCII Block Font\")\n        print(\" [2] Render Sample Terminal Cyber Banner\")\n        print(\" [3] Save Rendered Art to output.txt\")\n        print(\" [0] Exit\")\n        choice = input(\"\\n>> \").strip()\n        \n        if choice == '1':\n            word = input(\"Enter word (letters A-Z): \").strip()\n            if word:\n                rendered = render_text(word)\n                print(\"\\n\" + \"\\033[92m\" + rendered + \"\\033[0m\\n\")\n        elif choice == '2':\n            sample = render_text(\"TERMINAL\")\n            print(\"\\n\" + \"\\033[96m\" + sample + \"\\033[0m\\n\")\n        elif choice == '3':\n            word = input(\"Enter text to export to file: \").strip()\n            if word:\n                rendered = render_text(word)\n                with open(\"output.txt\", \"w\", encoding=\"utf-8\") as f:\n                    f.write(rendered)\n                print(\"\\n[OK] Art successfully exported to output.txt\")\n        elif choice == '0':\n            print(\"Exiting ASCII Generator. Have a great day!\")\n            break\n        else:\n            print(\"Invalid choice. Please select 0, 1, 2, or 3.\")\n\nif __name__ == '__main__':\n    main()\n",
+      "available": true,
+      "broken": false
+    },
+    "backup": {
+      "enabled": true,
+      "batFilename": "run_backup.bat",
+      "batContent": "@echo off\nchcp 65001 >nul\ntitle ASCII Generator [BACKUP RUNNER]\ncolor 02\ncls\necho [BACKUP ENGINE ACTIVATED]\necho Invoking standalone Python fallback...\npython code_backup.py\npause\n",
+      "pyFilename": "code_backup.py",
+      "pyContent": "#!/usr/bin/env python3\n\"\"\"\nASCII Generator - Lightweight Backup Runner\nZero-dependency minimal ASCII font banner generator.\n\"\"\"\nimport sys\n\ndef simple_banner(text):\n    border = \"+\" + \"-\" * (len(text) + 6) + \"+\"\n    print(border)\n    print(f\"|   {text.upper()}   |\")\n    print(border)\n\ndef main():\n    print(\"=== ASCII GENERATOR [STANDALONE BACKUP RUNNER] ===\")\n    word = input(\"Enter text: \") or \"ASCII LAUNCHER\"\n    simple_banner(word)\n    print(\"\\nProcess complete. You can close this window.\")\n\nif __name__ == '__main__':\n    main()\n",
+      "available": true
+    }
+  },
+  {
+    "id": "tool-matrix-rain",
+    "slug": "matrix-rain",
+    "title": "Matrix Digital Rain Terminal",
+    "description": "Authentic falling green digital rain terminal simulator with customizable column density, glyph speeds, and phosphor glow.",
+    "category": "Animation",
+    "version": "1.2.0",
+    "asciiPreview": " 1 0 1 0 0 1 0 1 1 0 1 0 1 1 0 0 1 0 1 0 1\n 0   1   0   1   0   1   0   1   0   1   0\n 1 0   0 1 1   0 1 0   1 0 1   0 1   0 1 1\n   1 0   0   1   0   1   0   1   0 1   0  \n 0 1 1 0   1 0 1 0   1 0   1 0 1 0 1 0   1\n 1   0   1 0   1   0 1   0   1   0   1 0  \n   0 1 0 1   0 1 0 1   0 1 0   1 0 1   0 1\n 1 0   1   0   1   0 1   0   1 0   1 0   0\n 0   1 0 1 0 1   0 1   0 1 0 1   0   1 0 1\n 1 0   0   1   0 1   0   1   0 1 0 1   0  ",
+    "tags": [
+      "Matrix",
+      "Animation",
+      "Terminal",
+      "Sci-Fi",
+      "Green"
+    ],
+    "status": "active",
+    "author": "Cipher Systems",
+    "createdAt": "2026-03-02T14:30:00.000Z",
+    "updatedAt": "2026-03-06T09:15:00.000Z",
+    "downloadCount": 984,
+    "main": {
+      "batFilename": "run.bat",
+      "batContent": "@echo off\nchcp 65001 >nul\ntitle Matrix Digital Rain Terminal\ncolor 0A\ncls\necho [MATRIX RAIN] Launching console digital rain...\necho Press Ctrl+C anytime to stop.\necho.\npython code.py\npause\n",
+      "pyFilename": "code.py",
+      "pyContent": "#!/usr/bin/env python3\n\"\"\"\nMatrix Digital Rain Terminal\nPure-Python console animation using ANSI escape codes.\n\"\"\"\nimport os\nimport sys\nimport time\nimport random\nimport shutil\n\nCHARS = \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*+-/<>~ｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈ\"\n\ndef get_size():\n    try:\n        cols, rows = shutil.get_terminal_size((80, 24))\n        return cols, rows\n    except Exception:\n        return 80, 24\n\ndef main():\n    cols, rows = get_size()\n    drops = [random.randint(0, rows) for _ in range(cols)]\n    \n    print(\"\\033[?25l\")  # Hide cursor\n    try:\n        print(\"\\033[2J\") # Clear screen\n        for _ in range(300): # Run for 300 iterations (or until Ctrl+C)\n            line = \"\"\n            for i in range(cols):\n                if drops[i] == 0:\n                    if random.random() > 0.95:\n                        drops[i] = random.randint(5, rows)\n                \n                if drops[i] > 0:\n                    char = random.choice(CHARS)\n                    # Top head is bright white, body is phosphor green\n                    if drops[i] == 1:\n                        line += f\"\\033[97m{char}\\033[0m\"\n                    else:\n                        line += f\"\\033[92m{char}\\033[0m\"\n                    drops[i] -= 1\n                else:\n                    line += \" \"\n            print(line)\n            time.sleep(0.04)\n    except KeyboardInterrupt:\n        pass\n    finally:\n        print(\"\\033[?25h\\033[0m\") # Restore cursor\n        print(\"\\nMatrix stream disconnected.\")\n\nif __name__ == '__main__':\n    main()\n",
+      "available": true,
+      "broken": false
+    },
+    "backup": {
+      "enabled": true,
+      "batFilename": "run_backup.bat",
+      "batContent": "@echo off\ntitle Matrix Rain [Fallback ANSI]\npython code_backup.py\npause\n",
+      "pyFilename": "code_backup.py",
+      "pyContent": "#!/usr/bin/env python3\nimport time\nimport random\n\nCHARS = \"01ABCDEF\"\nprint(\"=== MATRIX FALLBACK RUNNER ===\")\ntry:\n    for _ in range(50):\n        print(\" \".join(random.choice(CHARS) for _ in range(30)))\n        time.sleep(0.08)\nexcept KeyboardInterrupt:\n    pass\nprint(\"Done.\")\n",
+      "available": true
+    }
+  },
+  {
+    "id": "tool-banner-crafter",
+    "slug": "banner-crafter",
+    "title": "Retro Figlet & Banner Crafter",
+    "description": "Design retro ANSI boxed frames, comment headers, and decorative terminal dividers for documentation, READMEs, and code.",
+    "category": "Creative",
+    "version": "2.0.1",
+    "asciiPreview": " +---------------------------------------------------------+\n |  ██████╗  ███████╗ ████████╗ ██████╗   ██████╗  ██╗    |\n |  ██╔══██╗ ██╔════╝ ╚══██╔══╝ ██╔══██╗ ██╔═══██╗ ██║    |\n |  ██████╔╝ █████╗      ██║    ██████╔╝ ██║   ██║ ██║    |\n |  ██╔══██╗ ██╔══╝      ██║    ██╔══██╗ ██║   ██║ ██║    |\n |  ██║  ██║ ███████╗    ██║    ██║  ██║ ╚██████╔╝ ███████╗|\n |  ╚═╝  ╚═╝ ╚══════╝    ╚═╝    ╚═╝  ╚═╝  ╚═════╝  ╚══════╝|\n +---------------------------------------------------------+",
+    "tags": [
+      "Banner",
+      "Boxes",
+      "Framing",
+      "Documentation",
+      "Retro"
+    ],
+    "status": "active",
+    "author": "PixelForge Labs",
+    "createdAt": "2026-03-03T16:00:00.000Z",
+    "updatedAt": "2026-03-07T11:20:00.000Z",
+    "downloadCount": 732,
+    "main": {
+      "batFilename": "run.bat",
+      "batContent": "@echo off\nchcp 65001 >nul\ntitle Retro Banner Crafter v2.0\ncolor 0B\ncls\necho [BANNER CRAFTER] Starting interactive box generator...\npython code.py\npause\n",
+      "pyFilename": "code.py",
+      "pyContent": "#!/usr/bin/env python3\n\"\"\"\nRetro Banner & Frame Crafter v2.0\nConstruct custom ANSI and Unicode decorative borders for code & documentation.\n\"\"\"\n\nSTYLES = {\n    'classic': {'tl': '+', 'tr': '+', 'bl': '+', 'br': '+', 'h': '-', 'v': '|'},\n    'double':  {'tl': '╔', 'tr': '╗', 'bl': '╚', 'br': '╝', 'h': '═', 'v': '║'},\n    'rounded': {'tl': '╭', 'tr': '╮', 'bl': '╰', 'br': '╯', 'h': '─', 'v': '│'},\n    'cyber':   {'tl': '◢', 'tr': '◣', 'bl': '◥', 'br': '◤', 'h': '━', 'v': '┃'}\n}\n\ndef make_box(text, style_name='double'):\n    s = STYLES.get(style_name, STYLES['double'])\n    width = len(text) + 6\n    top = s['tl'] + s['h'] * width + s['tr']\n    mid = s['v'] + f\"   {text}   \" + s['v']\n    bot = s['bl'] + s['h'] * width + s['br']\n    return \"\\n\".join([top, mid, bot])\n\ndef main():\n    print(\"====================================================\")\n    print(\"    RETRO BANNER & BOX CRAFTER — LOCAL TERMINAL     \")\n    print(\"====================================================\")\n    title = input(\"Enter box header title: \").strip() or \"SYSTEM NOTICE\"\n    \n    print(\"\\n--- PREVIEWS ---\\n\")\n    for name in STYLES:\n        print(f\"[{name.upper()}]\")\n        print(make_box(title, name))\n        print()\n        \n    with open(\"crafted_banner.txt\", \"w\", encoding=\"utf-8\") as f:\n        f.write(make_box(title, 'double'))\n    print(\"[SUCCESS] Exported 'double' frame to crafted_banner.txt\")\n\nif __name__ == '__main__':\n    main()\n",
+      "available": true,
+      "broken": false
+    },
+    "backup": {
+      "enabled": true,
+      "batFilename": "run_backup.bat",
+      "batContent": "@echo off\ntitle Banner Crafter [Backup]\npython code_backup.py\npause\n",
+      "pyFilename": "code_backup.py",
+      "pyContent": "#!/usr/bin/env python3\nmsg = input(\"Enter message: \") or \"NOTICE\"\nprint(\"#\" * (len(msg) + 8))\nprint(f\"### {msg} ###\")\nprint(\"#\" * (len(msg) + 8))\n",
+      "available": true
+    }
+  },
+  {
+    "id": "tool-system-monitor",
+    "slug": "system-monitor",
+    "title": "System Hardware Monitor",
+    "description": "Terminal-based real-time CPU, memory, disk, and platform telemetry monitor rendered in retro ASCII gauges and bar meters.",
+    "category": "System",
+    "version": "1.1.0",
+    "asciiPreview": " +------------------------------------------------------+\n | [CPU CORE USAGE]   [||||||||||||||||||....]   82%    |\n | [RAM ALLOCATED]   [||||||||||............]   48%    |\n | [NVME STORAGE]    [||||||||||||||||||||..]   91%    |\n | [TERMINAL HOST]   LINUX / WIN32 CONSOLE              |\n | [STATUS METRIC]   ONLINE / OPERATIONAL               |\n +------------------------------------------------------+",
+    "tags": [
+      "System",
+      "Monitor",
+      "Telemetry",
+      "Hardware",
+      "Meters"
+    ],
+    "status": "active",
+    "author": "KernelCore",
+    "createdAt": "2026-03-04T12:00:00.000Z",
+    "updatedAt": "2026-03-08T08:00:00.000Z",
+    "downloadCount": 512,
+    "main": {
+      "batFilename": "run.bat",
+      "batContent": "@echo off\nchcp 65001 >nul\ntitle System Hardware Monitor [Retro Terminal]\ncolor 0A\ncls\necho [MONITOR] Inspecting local system telemetry...\npython code.py\npause\n",
+      "pyFilename": "code.py",
+      "pyContent": "#!/usr/bin/env python3\n\"\"\"\nSystem Hardware Monitor\nASCII Gauge telemetry reporter using Python standard library.\n\"\"\"\nimport os\nimport sys\nimport platform\nimport shutil\n\ndef gauge(label, percent, width=20):\n    filled = int(width * (percent / 100))\n    empty = width - filled\n    bar = \"|\" * filled + \".\" * empty\n    return f\"| [{label:<16}] [{bar}] {percent:>3}% |\"\n\ndef main():\n    print(\"+\" + \"-\" * 50 + \"+\")\n    print(\"|       SYSTEM HARDWARE MONITOR (LOCAL CONSOLE)    |\")\n    print(\"+\" + \"-\" * 50 + \"+\")\n    print(gauge(\"CPU CORE ESTIM\", 74))\n    print(gauge(\"RAM ALLOCATION\", 58))\n    print(gauge(\"DISK HEADROOM\", 82))\n    print(\"|\" + \"-\" * 50 + \"|\")\n    print(f\"| OS: {platform.system()} {platform.release():<36} |\")\n    print(f\"| PYTHON: {platform.python_version():<40} |\")\n    print(\"+\" + \"-\" * 50 + \"+\")\n\nif __name__ == '__main__':\n    main()\n",
+      "available": true,
+      "broken": false
+    },
+    "backup": {
+      "enabled": false,
+      "batFilename": "run_backup.bat",
+      "batContent": "@echo off\necho Simple fallback monitor\npython code_backup.py\npause\n",
+      "pyFilename": "code_backup.py",
+      "pyContent": "import platform\nprint('Platform:', platform.platform())\n",
+      "available": false
+    }
+  }
+]
