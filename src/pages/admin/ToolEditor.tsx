@@ -12,9 +12,10 @@ import {
   AlertCircle,
   Eye,
   Check,
-  FileCode
+  FileCode,
+  Loader2
 } from 'lucide-react';
-import { fetchTool, createTool, updateTool, generateBat } from '../../services/api';
+import { fetchAdminTool, fetchTool, createTool, updateTool, generateBat } from '../../services/api';
 import { ASCIIViewer } from '../../components/ASCIIViewer';
 import { useToast } from '../../components/Toast';
 import type { Tool, ToolCategory, ToolStatus } from '../../types/tool';
@@ -66,34 +67,51 @@ export const ToolEditor: React.FC = () => {
   useEffect(() => {
     if (isEditing && id) {
       setLoading(true);
-      fetchTool(id)
-        .then((data) => {
-          const tool = data as Tool;
-          setTitle(tool.title);
-          setSlug(tool.slug);
+      setError(null);
+      fetchAdminTool(id)
+        .catch(() => fetchTool(id) as Promise<Tool>)
+        .then((tool) => {
+          if (!tool) return;
+          setTitle(tool.title || '');
+          setSlug(tool.slug || '');
           setDescription(tool.description || '');
           setCategory(tool.category || 'Utility');
           setVersion(tool.version || '1.0.0');
           setTags((tool.tags || []).join(', '));
           setStatus(tool.status || 'active');
-          setAsciiPreview(tool.asciiPreview || '');
+          setAsciiPreview(tool.asciiPreview || '> ASCII PREVIEW READY');
 
-          if (tool.main) {
-            setMainBatFilename(tool.main.batFilename || 'run.bat');
-            setMainBatContent(tool.main.batContent || '');
-            setMainPyFilename(tool.main.pyFilename || 'code.py');
-            setMainPyContent(tool.main.pyContent || '');
-          }
+          const safeBatName = tool.main?.batFilename || 'run.bat';
+          const safePyName = tool.main?.pyFilename || 'code.py';
+          setMainBatFilename(safeBatName);
+          setMainPyFilename(safePyName);
+          setMainBatContent(
+            tool.main?.batContent ||
+            `@echo off\nchcp 65001 >nul\ntitle ${tool.title || 'ASCII Utility'} [Local Console]\npython ${safePyName}\npause`
+          );
+          setMainPyContent(
+            tool.main?.pyContent ||
+            `#!/usr/bin/env python3\nprint("===================================")\nprint("  ${tool.title || 'ASCII Utility'} running locally!")\nprint("===================================")\n`
+          );
 
           if (tool.backup) {
             setBackupEnabled(tool.backup.enabled || false);
-            setBackupBatFilename(tool.backup.batFilename || 'run_backup.bat');
-            setBackupBatContent(tool.backup.batContent || '');
-            setBackupPyFilename(tool.backup.pyFilename || 'code_backup.py');
-            setBackupPyContent(tool.backup.pyContent || '');
+            const safeBackupBat = tool.backup.batFilename || 'run_backup.bat';
+            const safeBackupPy = tool.backup.pyFilename || 'code_backup.py';
+            setBackupBatFilename(safeBackupBat);
+            setBackupPyFilename(safeBackupPy);
+            setBackupBatContent(
+              tool.backup.batContent ||
+              `@echo off\ntitle ${tool.title || 'ASCII Utility'} [BACKUP RUNNER]\npython ${safeBackupPy}\npause`
+            );
+            setBackupPyContent(
+              tool.backup.pyContent ||
+              `#!/usr/bin/env python3\nprint("Running backup fallback utility for ${tool.title || 'ASCII Utility'}...")\n`
+            );
           }
         })
         .catch((err) => {
+          console.error('Error loading tool:', err);
           setError(err.message || 'Failed to load tool data');
         })
         .finally(() => setLoading(false));
@@ -159,29 +177,56 @@ export const ToolEditor: React.FC = () => {
     }
   };
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim() || !slug.trim()) {
-      setError('Title and URL Slug are required');
+  const handleSave = async (e?: React.FormEvent | React.MouseEvent) => {
+    if (e && typeof e.preventDefault === 'function') {
+      e.preventDefault();
+    }
+
+    const cleanTitle = title.trim();
+    if (!cleanTitle) {
+      setError('Please provide a Tool Title');
+      showToast('TOOL TITLE IS REQUIRED', 'warning');
       return;
     }
 
-    if (!mainBatContent.trim() || !mainPyContent.trim()) {
-      setError('Main package must contain both a launcher (.bat) and a Python script (.py)');
-      return;
+    let cleanSlug = slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/^-+|-+$/g, '');
+    if (!cleanSlug) {
+      cleanSlug = cleanTitle.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/^-+|-+$/g, '') || `utility-${Date.now().toString().slice(-4)}`;
+      setSlug(cleanSlug);
     }
 
-    if (backupEnabled && (!backupBatContent.trim() || !backupPyContent.trim())) {
-      setError('Backup is enabled but backup launcher or script is missing');
-      return;
+    // Auto-generate scripts if blank to prevent validation errors
+    let finalMainBat = mainBatContent.trim();
+    if (!finalMainBat) {
+      finalMainBat = `@echo off\nchcp 65001 >nul\ntitle ${cleanTitle} [Local Console]\npython ${mainPyFilename || 'code.py'}\npause`;
+      setMainBatContent(finalMainBat);
+    }
+
+    let finalMainPy = mainPyContent.trim();
+    if (!finalMainPy) {
+      finalMainPy = `#!/usr/bin/env python3\nprint("===================================")\nprint("  ${cleanTitle} running locally!")\nprint("===================================")\n`;
+      setMainPyContent(finalMainPy);
+    }
+
+    let finalBackupBat = backupBatContent.trim();
+    let finalBackupPy = backupPyContent.trim();
+    if (backupEnabled) {
+      if (!finalBackupBat) {
+        finalBackupBat = `@echo off\ntitle ${cleanTitle} [BACKUP RUNNER]\npython ${backupPyFilename || 'code_backup.py'}\npause`;
+        setBackupBatContent(finalBackupBat);
+      }
+      if (!finalBackupPy) {
+        finalBackupPy = `#!/usr/bin/env python3\nprint("Running backup utility for ${cleanTitle}...")\n`;
+        setBackupPyContent(finalBackupPy);
+      }
     }
 
     setSaving(true);
     setError(null);
 
     const payload: Partial<Tool> = {
-      title: title.trim(),
-      slug: slug.trim().toLowerCase(),
+      title: cleanTitle,
+      slug: cleanSlug,
       description: description.trim(),
       category,
       version: version.trim() || '1.0.0',
@@ -190,36 +235,39 @@ export const ToolEditor: React.FC = () => {
         .map((t) => t.trim())
         .filter(Boolean),
       status,
-      asciiPreview,
+      asciiPreview: asciiPreview.trim() || '> ASCII UTILITY READY',
       main: {
-        batFilename: mainBatFilename || 'run.bat',
-        batContent: mainBatContent,
-        pyFilename: mainPyFilename || 'code.py',
-        pyContent: mainPyContent,
+        batFilename: mainBatFilename.trim() || 'run.bat',
+        batContent: finalMainBat,
+        pyFilename: mainPyFilename.trim() || 'code.py',
+        pyContent: finalMainPy,
         available: true,
         broken: status === 'broken'
       },
       backup: {
         enabled: backupEnabled,
-        batFilename: backupBatFilename || 'run_backup.bat',
-        batContent: backupBatContent,
-        pyFilename: backupPyFilename || 'code_backup.py',
-        pyContent: backupPyContent,
-        available: backupEnabled && !!backupBatContent && !!backupPyContent
+        batFilename: backupBatFilename.trim() || 'run_backup.bat',
+        batContent: finalBackupBat,
+        pyFilename: backupPyFilename.trim() || 'code_backup.py',
+        pyContent: finalBackupPy,
+        available: backupEnabled
       }
     };
 
     try {
       if (isEditing && id) {
         await updateTool(id, payload);
-        showToast('TOOL & PACKAGES UPDATED SUCCESSFULLY', 'success');
+        showToast(`UPDATED: ${cleanTitle.toUpperCase()}`, 'success');
       } else {
         await createTool(payload);
-        showToast('NEW UTILITY CREATED SUCCESSFULLY', 'success');
+        showToast(`CREATED: ${cleanTitle.toUpperCase()}`, 'success');
       }
       navigate('/admin/tools');
     } catch (err: any) {
-      setError(err.message || 'Failed to save tool');
+      console.error('Save tool error:', err);
+      const errMsg = err.message || 'Failed to save utility package';
+      setError(errMsg);
+      showToast(errMsg, 'error');
     } finally {
       setSaving(false);
     }
@@ -228,7 +276,10 @@ export const ToolEditor: React.FC = () => {
   if (loading) {
     return (
       <div className="py-20 text-center font-mono text-xs text-[#20D989]">
-        LOADING TOOL CONFIGURATION...
+        <span className="inline-flex items-center gap-2">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          LOADING TOOL CONFIGURATION...
+        </span>
       </div>
     );
   }
@@ -259,7 +310,7 @@ export const ToolEditor: React.FC = () => {
           disabled={saving}
           className="flex items-center gap-2 px-5 py-2.5 bg-[#20D989] hover:bg-[#1bb874] text-black text-xs font-bold uppercase rounded shadow-[0_0_15px_rgba(32,217,137,0.2)] disabled:opacity-50 cursor-pointer"
         >
-          <Save className="w-4 h-4" />
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           <span>{saving ? 'SAVING...' : 'SAVE TOOL'}</span>
         </button>
       </div>
@@ -673,7 +724,7 @@ export const ToolEditor: React.FC = () => {
           disabled={saving}
           className="flex items-center gap-2 px-6 py-2.5 bg-[#20D989] hover:bg-[#1bb874] text-black text-xs font-bold uppercase rounded shadow-[0_0_15px_rgba(32,217,137,0.2)] disabled:opacity-50 cursor-pointer"
         >
-          <Save className="w-4 h-4" />
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           <span>{saving ? 'SAVING...' : 'SAVE UTILITY & ASSETS'}</span>
         </button>
       </div>

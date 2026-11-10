@@ -5,7 +5,7 @@ import { loginAdmin, setAdminToken } from '../../services/api';
 import { useToast } from '../../components/Toast';
 
 export const AdminLogin: React.FC = () => {
-  const [password, setPassword] = useState('admin123');
+  const [password, setPassword] = useState('notsus');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -99,11 +99,11 @@ export const AdminLogin: React.FC = () => {
 
           {/* Quick Key helper */}
           <div className="p-3 bg-[#080808] border border-[#1A1A1A] rounded text-[11px] text-[#666666] flex items-center justify-between">
-            <span>Key: <strong className="text-[#20D989]">admin123</strong></span>
+            <span>Key: <strong className="text-[#20D989]">notsus</strong></span>
             <button
               type="button"
-              onClick={() => setPassword('admin123')}
-              className="text-[#20D989] hover:underline"
+              onClick={() => setPassword('notsus')}
+              className="text-[#20D989] hover:underline cursor-pointer"
             >
               Fill Key
             </button>
