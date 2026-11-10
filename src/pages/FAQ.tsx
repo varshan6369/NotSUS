@@ -9,34 +9,34 @@ interface FAQItem {
 
 const FAQ_DATA: FAQItem[] = [
   {
-    category: 'EXECUTION',
-    question: 'How do the utilities run directly in the web browser?',
+    category: 'INSTALLATION',
+    question: 'How do I install and run the tools as a .ZIP package on my PC?',
     answer:
-      'ASCII Launcher embeds a custom virtual terminal emulator with real-time ANSI rendering, keyboard command handling, and in-memory execution. You can type input, configure options, and generate ASCII banners instantly with zero latency.'
+      'Click the "Install & Run (.zip)" button on any utility page to download the launcher package. Extract the downloaded .zip file into a folder on your computer, then double-click "run.bat". It automatically opens Windows Command Prompt and runs the ASCII utility locally on your computer.'
   },
   {
-    category: 'DOWNLOADS',
-    question: 'Can I download the raw files to my computer?',
+    category: 'BACKUP OPTION',
+    question: 'What is the Backup Run option?',
     answer:
-      'No. The utilities are designed to execute strictly in-memory inside the web application sandbox. No files, binaries, or archives are stored on your disk.'
+      'Each utility can have an independent secondary backup launcher (run_backup.bat) and fallback script (code_backup.py). When the administrator enables the backup option, a dedicated "Run Backup Package (.zip)" button appears on the tool page, allowing users to download or run the redundant fallback edition.'
   },
   {
-    category: 'REQUIREMENTS',
-    question: 'Do I need Python or extra software installed?',
+    category: 'PC EXECUTION',
+    question: 'Why does the tool run in Command Prompt on my computer instead of silently in the background?',
     answer:
-      'No external software is required. The web terminal provides full standalone execution right inside your browser on any modern device (Windows, Mac, Linux, or mobile).'
+      'The sole purpose of the launcher is to execute utilities directly on your PC inside your own terminal (Windows Command Prompt, PowerShell, or bash). Double-clicking run.bat gives you a dedicated console window with full interactive support, color rendering, and hotkeys.'
   },
   {
-    category: 'SECURITY',
-    question: 'Is in-browser execution safe?',
+    category: 'WEB TERMINAL',
+    question: 'Can I also test tools directly in the browser?',
     answer:
-      'Yes. Because code execution happens entirely within the browser memory and client environment, your local operating system files and network remain completely untouched.'
+      'Yes! You can switch to the "WEB TERMINAL TESTER" tab on any tool page to test and interact with the utility immediately in-browser without having to unzip files first.'
   },
   {
-    category: 'FEATURES',
-    question: 'What commands are supported in the terminal?',
+    category: '1-LINE COMMAND',
+    question: 'Can I run tools in my terminal without downloading a .ZIP?',
     answer:
-      'Each utility supports interactive prompts. You can type words to generate ASCII banners, or use universal commands such as "help", "clear" (to clear the screen), and "restart" (to reboot the session).'
+      'Yes. Copy the 1-line command displayed on the tool page (e.g. "curl -sL <url>/api/tools/<slug>/raw/script | python") and paste it into Command Prompt or PowerShell to stream and execute it directly in memory.'
   }
 ];
 

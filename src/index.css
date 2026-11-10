@@ -37,18 +37,35 @@
   background: #20D989;
 }
 
-/* Subtle CRT Scanline Overlay */
+/* CRT Scanline Overlay */
 .crt-scanlines {
   background: linear-gradient(
     rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.25) 50%
+    rgba(0, 0, 0, 0.35) 50%
   ), linear-gradient(
     90deg,
-    rgba(255, 0, 0, 0.03),
-    rgba(0, 255, 0, 0.01),
-    rgba(0, 0, 255, 0.03)
+    rgba(255, 0, 0, 0.04),
+    rgba(0, 255, 0, 0.02),
+    rgba(0, 0, 255, 0.04)
   );
   background-size: 100% 4px, 6px 100%;
+}
+
+/* Heavy CRT Scanline Beam Animation */
+@keyframes crt-beam {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(1000%); }
+}
+
+.crt-beam-overlay::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 0%, rgba(32, 217, 137, 0.05) 50%, rgba(18, 16, 16, 0) 100%);
+  opacity: 0.7;
+  pointer-events: none;
+  animation: crt-beam 8s linear infinite;
 }
 
 /* Terminal Cursor Blink */
@@ -66,11 +83,69 @@
   animation: term-blink 1s steps(1) infinite;
 }
 
+/* Phosphor Bloom & Glows */
+.glow-green {
+  text-shadow: 0 0 8px rgba(32, 217, 137, 0.6), 0 0 16px rgba(32, 217, 137, 0.2);
+}
+
+.glow-amber {
+  text-shadow: 0 0 8px rgba(255, 189, 46, 0.6), 0 0 16px rgba(255, 189, 46, 0.2);
+}
+
+.glow-cyber {
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.6), 0 0 16px rgba(255, 0, 128, 0.3);
+}
+
+/* Glitch animation */
+@keyframes glitch-skew {
+  0% { transform: skew(0deg); }
+  20% { transform: skew(-1deg); }
+  40% { transform: skew(1deg); }
+  60% { transform: skew(-0.5deg); }
+  80% { transform: skew(0.5deg); }
+  100% { transform: skew(0deg); }
+}
+
+.animate-glitch {
+  animation: glitch-skew 3s infinite ease-in-out;
+}
+
+/* Cyber holographic pulse */
+@keyframes cyber-pulse {
+  0%, 100% { border-color: rgba(32, 217, 137, 0.3); box-shadow: 0 0 10px rgba(32, 217, 137, 0.1); }
+  50% { border-color: rgba(32, 217, 137, 0.8); box-shadow: 0 0 20px rgba(32, 217, 137, 0.3); }
+}
+
+.cyber-box-glow {
+  animation: cyber-pulse 3s infinite ease-in-out;
+}
+
 /* ASCII Art Canvas container to preserve exact spacing */
 pre.ascii-canvas {
   font-family: 'JetBrains Mono', 'IBM Plex Mono', monospace;
-  line-height: 1.1;
+  line-height: 1.05;
   letter-spacing: 0px;
   white-space: pre;
   tab-size: 4;
+}
+
+/* Range input styling */
+input[type=range] {
+  -webkit-appearance: none;
+  background: #181818;
+  height: 4px;
+  border-radius: 2px;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 14px;
+  width: 14px;
+  border-radius: 2px;
+  background: #20D989;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(32, 217, 137, 0.5);
+  transition: transform 0.1s ease;
+}
+input[type=range]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
 }

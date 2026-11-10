@@ -267,6 +267,106 @@ app.get('/api/tools/:slugOrId', (req: Request, res: Response) => {
    User clicks "Run in Terminal" -> dispatches the executable
    launcher package to run locally in the user's CMD terminal!
    ======================================================== */
+/* ========================================================
+   RAW STREAM & 1-FILE STANDALONE BAT DISPATCHERS
+   Zero-download streaming for Windows CMD / PowerShell
+   and 1-file self-contained .bat without ZIP extraction!
+   ======================================================== */
+
+// Stream raw Python script for 1-line PC terminal execution (curl -sL ... | python)
+app.get('/api/tools/:slug/raw/script', (req: Request, res: Response) => {
+  const { slug } = req.params;
+  const isBackup = req.query.target === 'backup';
+  loadProjectsFromDisk();
+  const tool = toolsCache.find(t => t.slug === slug);
+  if (!tool) {
+    return res.status(404).send('# Error: Tool not found');
+  }
+
+  const projectDir = path.join(PROJECTS_DIR, tool.slug);
+  const pyFilename = isBackup
+    ? (tool.backup?.pyFilename || 'code_backup.py')
+    : (tool.main?.pyFilename || 'code.py');
+  const pyPath = path.join(projectDir, pyFilename);
+
+  if (!fs.existsSync(pyPath)) {
+    return res.status(404).send('# Error: Script not found on disk');
+  }
+
+  const pyContent = fs.readFileSync(pyPath, 'utf-8');
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  return res.send(pyContent);
+});
+
+// Standalone 1-file .bat launcher with embedded Python code (Zero ZIP, Zero extraction)
+app.get('/api/tools/:slug/standalone.bat', (req: Request, res: Response) => {
+  const { slug } = req.params;
+  const isBackup = req.query.target === 'backup';
+  loadProjectsFromDisk();
+  const tool = toolsCache.find(t => t.slug === slug);
+  if (!tool) {
+    return res.status(404).send('echo Error: Tool not found & pause');
+  }
+
+  const projectDir = path.join(PROJECTS_DIR, tool.slug);
+  const pyFilename = isBackup
+    ? (tool.backup?.pyFilename || 'code_backup.py')
+    : (tool.main?.pyFilename || 'code.py');
+  const pyPath = path.join(projectDir, pyFilename);
+
+  let pyContent = '';
+  if (fs.existsSync(pyPath)) {
+    pyContent = fs.readFileSync(pyPath, 'utf-8');
+  } else {
+    pyContent = isBackup
+      ? (tool.backup?.pyContent || 'print("ASCII Utility Backup Runner")')
+      : (tool.main?.pyContent || 'print("ASCII Utility Launcher")');
+  }
+
+  // Base64 encode the Python payload to embed seamlessly in a single standalone .bat file
+  const b64 = Buffer.from(pyContent, 'utf-8').toString('base64');
+  const titleSuffix = isBackup ? '[BACKUP RUNNER]' : '[LOCAL TERMINAL]';
+
+  const standaloneBat = `@echo off
+setlocal EnableDelayedExpansion
+chcp 65001 >nul
+title ${tool.title.replace(/["&|<>^]/g, '')} ${titleSuffix}
+cls
+echo ===================================================================
+echo   ${tool.title.toUpperCase()} ${titleSuffix}
+echo ===================================================================
+echo.
+echo [1/2] Verifying local Python environment...
+where python >nul 2>&1
+if errorlevel 1 (
+    echo.
+    echo [ERROR] Python was not found in your system PATH.
+    echo Please install Python 3.8+ from https://www.python.org/
+    echo Make sure to check the box "Add Python to PATH" during installation.
+    echo.
+    pause
+    exit /b 1
+)
+echo [2/2] Launching interactive utility on your PC...
+echo.
+python -c "import base64; exec(base64.b64decode('${b64}').decode('utf-8'))"
+if errorlevel 1 (
+    echo.
+    echo [ERROR] Utility exited with an error code.
+)
+echo.
+echo ===================================================================
+echo [ASCII LAUNCHER] Execution finished. Press any key to close CMD.
+pause >nul
+exit /b 0
+`;
+
+  res.setHeader('Content-Type', 'application/x-bat; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="${tool.slug}${isBackup ? '-backup' : ''}.bat"`);
+  return res.send(standaloneBat);
+});
+
+// ZIP package launcher (Main)
 app.get('/api/tools/:slug/run', async (req: Request, res: Response) => {
   const { slug } = req.params;
   loadProjectsFromDisk();
@@ -288,7 +388,7 @@ app.get('/api/tools/:slug/run', async (req: Request, res: Response) => {
   const batContent = fs.readFileSync(batPath, 'utf-8');
   const pyContent = fs.readFileSync(pyPath, 'utf-8');
 
-  // Package the project files so user double-clicks run.bat to execute in CMD
+  // Package the project files into .zip
   const zip = new JSZip();
   zip.file(batFilename, batContent);
   zip.file(pyFilename, pyContent);
@@ -309,8 +409,8 @@ app.get('/api/tools/:slug/run', async (req: Request, res: Response) => {
   }
 });
 
-// Host OS Terminal Spawn (For local self-hosted usage on host machine)
-app.post('/api/tools/:slug/spawn', (req: Request, res: Response) => {
+// ZIP package launcher (Backup Option)
+app.get('/api/tools/:slug/run/backup', async (req: Request, res: Response) => {
   const { slug } = req.params;
   loadProjectsFromDisk();
   const tool = toolsCache.find(t => t.slug === slug);
@@ -319,7 +419,55 @@ app.post('/api/tools/:slug/spawn', (req: Request, res: Response) => {
   }
 
   const projectDir = path.join(PROJECTS_DIR, tool.slug);
-  const launcherFile = tool.main?.batFilename || 'run.bat';
+  const batFilename = tool.backup?.batFilename || 'run_backup.bat';
+  const pyFilename = tool.backup?.pyFilename || 'code_backup.py';
+  const batPath = path.join(projectDir, batFilename);
+  const pyPath = path.join(projectDir, pyFilename);
+
+  if (!fs.existsSync(batPath) || !fs.existsSync(pyPath)) {
+    return res.status(400).json({ error: 'Backup launcher files are missing on disk' });
+  }
+
+  const batContent = fs.readFileSync(batPath, 'utf-8');
+  const pyContent = fs.readFileSync(pyPath, 'utf-8');
+
+  // Package the backup project files into .zip
+  const zip = new JSZip();
+  zip.file(batFilename, batContent);
+  zip.file(pyFilename, pyContent);
+
+  tool.downloadCount = (tool.downloadCount || 0) + 1;
+  saveProjectToDisk(tool);
+
+  try {
+    const zipBuffer = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="${tool.slug}-backup-launcher.zip"`);
+    res.setHeader('Content-Length', zipBuffer.length);
+    return res.send(zipBuffer);
+  } catch (err) {
+    console.error('Backup launcher generation error:', err);
+    return res.status(500).json({ error: 'Failed to dispatch backup launcher package' });
+  }
+});
+
+// Host OS Terminal Spawn (For local self-hosted usage on host machine)
+app.post('/api/tools/:slug/spawn', (req: Request, res: Response) => {
+  const { slug } = req.params;
+  const target = req.body?.target || req.query?.target || 'main';
+  const isBackup = target === 'backup';
+
+  loadProjectsFromDisk();
+  const tool = toolsCache.find(t => t.slug === slug);
+  if (!tool) {
+    return res.status(404).json({ error: 'Project not found' });
+  }
+
+  const isLocalHost = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
+  const projectDir = path.join(PROJECTS_DIR, tool.slug);
+  const launcherFile = isBackup
+    ? (tool.backup?.batFilename || 'run_backup.bat')
+    : (tool.main?.batFilename || 'run.bat');
   const launcherPath = path.join(projectDir, launcherFile);
 
   if (!fs.existsSync(launcherPath)) {
@@ -340,7 +488,12 @@ app.post('/api/tools/:slug/spawn', (req: Request, res: Response) => {
 
   res.json({
     success: true,
-    message: `Triggered ${launcherFile} on host environment.`
+    isLocalHost,
+    platform: process.platform,
+    target: isBackup ? 'backup' : 'main',
+    message: isLocalHost
+      ? `Successfully spawned ${launcherFile} (${isBackup ? 'Backup' : 'Main'}) in Windows Command Prompt on your PC!`
+      : `Triggered ${launcherFile} on server container.`
   });
 });
 

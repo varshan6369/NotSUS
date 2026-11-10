@@ -13,6 +13,7 @@ export const Navbar: React.FC = () => {
   }, [location.pathname]);
 
   const navLinks = [
+    { label: 'Studio (/app)', path: '/app', highlight: true },
     { label: 'Home', path: '/' },
     { label: 'Tools', path: '/tools' },
     { label: 'Library', path: '/library' },
@@ -52,7 +53,11 @@ export const Navbar: React.FC = () => {
                 key={link.path}
                 to={link.path}
                 className={`relative py-5 font-mono text-sm tracking-wider transition-colors whitespace-nowrap ${
-                  active ? 'text-[#F2F2F2]' : 'text-[#999999] hover:text-[#F2F2F2]'
+                  active
+                    ? 'text-[#F2F2F2]'
+                    : link.highlight
+                    ? 'text-[#20D989] font-bold hover:text-white'
+                    : 'text-[#999999] hover:text-[#F2F2F2]'
                 }`}
               >
                 {link.label}

@@ -389,7 +389,7 @@ export const ToolEditor: React.FC = () => {
                 : 'text-[#666666] hover:text-[#F2F2F2]'
             }`}
           >
-            03. Backup Redundancy Files
+            03. Place Backup Files (Backup Run Option)
           </button>
           <button
             type="button"
@@ -520,27 +520,27 @@ export const ToolEditor: React.FC = () => {
           </div>
         )}
 
-        {/* TAB 2: BACKUP PACKAGE */}
+        {/* TAB 2: BACKUP PACKAGE (BACKUP RUN OPTION) */}
         {activeTab === 'backup' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between pb-3 border-b border-[#1C1C1C]">
               <div>
                 <h3 className="text-xs font-bold text-[#F2F2F2]">
-                  DUAL SCRIPT REDUNDANCY CONFIGURATION
+                  BACKUP FILES REPOSITORY (SECONDARY RUN OPTION)
                 </h3>
-                <p className="text-[11px] text-[#666666]">
-                  Optional secondary fallback script in the project directory.
+                <p className="text-[11px] text-[#666666] mt-0.5">
+                  Place your backup launcher (.bat) and backup script (.py) here. When enabled, users see the dedicated [Run Backup Package (.zip)] option on the tool page.
                 </p>
               </div>
 
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-center gap-2 cursor-pointer bg-[#050505] border border-[#242424] px-3 py-1.5 rounded">
                 <input
                   type="checkbox"
                   checked={backupEnabled}
                   onChange={(e) => setBackupEnabled(e.target.checked)}
                   className="accent-[#20D989] w-4 h-4 cursor-pointer"
                 />
-                <span className="text-xs font-bold text-[#20D989]">ENABLE BACKUP</span>
+                <span className="text-xs font-bold text-[#20D989]">ENABLE BACKUP RUN OPTION</span>
               </label>
             </div>
 

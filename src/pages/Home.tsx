@@ -74,19 +74,19 @@ export const Home: React.FC = () => {
               {/* Hero Action Buttons matching mockup */}
               <div className="flex flex-wrap items-center gap-4 pt-4">
                 <Link
-                  to="/tools"
-                  className="flex items-center gap-2.5 px-6 py-3 bg-transparent text-[#20D989] border border-[#20D989] hover:bg-[#20D989] hover:text-black font-mono text-sm font-semibold tracking-wider uppercase transition-all duration-200 rounded shadow-[0_0_15px_rgba(32,217,137,0.1)] hover:shadow-[0_0_20px_rgba(32,217,137,0.3)]"
+                  to="/app"
+                  className="flex items-center gap-2.5 px-6 py-3 bg-[#20D989] hover:bg-[#1bb874] text-black font-mono text-sm font-bold tracking-wider uppercase transition-all duration-200 rounded shadow-[0_0_20px_rgba(32,217,137,0.3)] hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <Play className="w-4 h-4 fill-current" />
-                  <span>Browse Tools</span>
+                  <Sparkles className="w-4 h-4 fill-current" />
+                  <span>Launch ASCII Studio (/app)</span>
                 </Link>
 
                 <Link
-                  to="/tools/ascii-generator"
-                  className="flex items-center gap-2 px-6 py-3 bg-[#0A0A0A] text-[#999999] hover:text-[#F2F2F2] border border-[#242424] hover:border-[#666666] font-mono text-sm tracking-wider uppercase transition-all rounded"
+                  to="/tools"
+                  className="flex items-center gap-2.5 px-6 py-3 bg-transparent text-[#20D989] border border-[#20D989] hover:bg-[#20D989] hover:text-black font-mono text-sm font-semibold tracking-wider uppercase transition-all duration-200 rounded shadow-[0_0_15px_rgba(32,217,137,0.1)]"
                 >
-                  <Terminal className="w-4 h-4 text-[#20D989]" />
-                  <span>Launch Web Console</span>
+                  <Play className="w-4 h-4 fill-current" />
+                  <span>Browse PC Tools</span>
                 </Link>
               </div>
 

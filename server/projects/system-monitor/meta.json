@@ -25,9 +25,9 @@
     "broken": false
   },
   "backup": {
-    "enabled": false,
+    "enabled": true,
     "batFilename": "run_backup.bat",
     "pyFilename": "code_backup.py",
-    "available": false
+    "available": true
   }
 }

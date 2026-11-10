@@ -11,6 +11,7 @@ import { ToolDetail } from './pages/ToolDetail';
 import { Library } from './pages/Library';
 import { FAQ } from './pages/FAQ';
 import { About } from './pages/About';
+import { AsciiStudio } from './pages/AsciiStudio';
 
 // Admin Pages
 import { AdminLogin } from './pages/admin/AdminLogin';
@@ -47,6 +48,8 @@ export default function App() {
             <Route path="/library" element={<Library />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/about" element={<About />} />
+            <Route path="/app" element={<AsciiStudio />} />
+            <Route path="/studio" element={<AsciiStudio />} />
           </Route>
 
           {/* Admin Login */}

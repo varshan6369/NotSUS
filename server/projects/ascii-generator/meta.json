@@ -17,7 +17,7 @@
   "author": "ASCII Launcher Team",
   "createdAt": "2026-03-01T10:00:00.000Z",
   "updatedAt": "2026-03-05T12:00:00.000Z",
-  "downloadCount": 1424,
+  "downloadCount": 1426,
   "main": {
     "batFilename": "run.bat",
     "pyFilename": "code.py",
